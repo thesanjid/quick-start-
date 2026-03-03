@@ -125,3 +125,8 @@ a.boxed-btn {
     font-size: 28px;
     line-height: 35px;
   }
+ .new text {
+font-size: medium;
+color: red;
+text-align: center;
+}
