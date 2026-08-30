@@ -1,0 +1,13 @@
+const VALID_PRIORITIES = ["low", "medium", "high"];
+
+class Task {
+  constructor(id, title, priority = "medium") {
+    this.id = id;
+    this.title = title;
+    this.priority = VALID_PRIORITIES.includes(priority) ? priority : "medium";
+    this.completed = false;
+    this.createdAt = new Date();
+  }
+}
+
+module.exports = { Task, VALID_PRIORITIES };
