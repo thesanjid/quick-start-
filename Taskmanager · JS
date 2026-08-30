@@ -1,0 +1,61 @@
+const { Task } = require("../models/Task");
+
+class TaskManager {
+  constructor() {
+    this.tasks = new Map();
+    this.nextId = 1;
+  }
+
+  // ---- Create ----
+  addTask(title, priority) {
+    if (!title?.trim()) throw new Error("Task title is required.");
+    const task = new Task(this.nextId++, title.trim(), priority);
+    this.tasks.set(task.id, task);
+    return task;
+  }
+
+  // ---- Read ----
+  getTask(id) {
+    return this.tasks.get(id) || null;
+  }
+
+  listTasks({ status = "all", priority } = {}) {
+    return Array.from(this.tasks.values()).filter((task) => {
+      const statusMatch =
+        status === "all" ||
+        (status === "completed" && task.completed) ||
+        (status === "pending" && !task.completed);
+
+      const priorityMatch = !priority || task.priority === priority;
+
+      return statusMatch && priorityMatch;
+    });
+  }
+
+  // ---- Update ----
+  toggleComplete(id) {
+    const task = this.getTask(id);
+    if (!task) return null;
+    task.completed = !task.completed;
+    return task;
+  }
+
+  updateTask(id, updates = {}) {
+    const task = this.getTask(id);
+    if (!task) return null;
+
+    if (updates.title !== undefined) {
+      if (!updates.title?.trim()) throw new Error("Task title cannot be empty.");
+      task.title = updates.title.trim();
+    }
+    if (updates.priority !== undefined) task.priority = updates.priority;
+    return task;
+  }
+
+  // ---- Delete ----
+  deleteTask(id) {
+    return this.tasks.delete(id);
+  }
+}
+
+module.exports = TaskManager;
