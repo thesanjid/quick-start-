@@ -111,3 +111,46 @@ app.delete('/items/:id', (req, res) => {
 });
 
 app.listen(3000);
+const express = require('express');
+const router = express.Router();
+
+// In-memory example — swap this out for your actual DB calls
+let items = [
+  { id: 1, name: 'Item A', category: 'x' },
+  { id: 2, name: 'Item B', category: 'y' },
+];
+
+// SELECT (GET) — supports optional filtering via query params
+// e.g. GET /items?category=x
+router.get('/items', (req, res) => {
+  const { category } = req.query;
+  let result = items;
+
+  if (category) {
+    result = result.filter(item => item.category === category);
+  }
+
+  res.json(result);
+});
+
+// SELECT ONE (GET by id)
+router.get('/items/:id', (req, res) => {
+  const item = items.find(i => i.id === parseInt(req.params.id));
+  if (!item) return res.status(404).json({ message: 'Item not found' });
+  res.json(item);
+});
+
+// REMOVE (DELETE)
+router.delete('/items/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = items.findIndex(i => i.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ message: 'Item not found' });
+  }
+
+  const [deleted] = items.splice(index, 1);
+  res.json({ message: 'Item removed', deleted });
+});
+
+module.exports = router;
